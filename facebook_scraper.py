@@ -87,8 +87,7 @@ def _extract_post_id(article):
 
 
 def _extract_text(article):
-    paragraphs = article.find('p')
-    if paragraphs:
+    if paragraphs := article.find('p'):
         return '\n'.join(paragraph.text for paragraph in paragraphs)
     return None
 
@@ -114,13 +113,11 @@ def _extract_image(article):
     other_containers = story_container.xpath('div/div')
 
     for container in other_containers:
-        image_container = container.find('.img', first=True)
-        if image_container is None:
+        if (image_container := container.find('.img', first=True)) is None:
             continue
 
         style = image_container.attrs.get('style', '')
-        match = _image_regex.search(style)
-        if match:
+        if match := _image_regex.search(style):
             return _decode_css_url(match.groups()[0])
 
     return None
@@ -132,8 +129,7 @@ def _extract_post_url(article):
     elements = article.find('header a')
     for element in elements:
         href = element.attrs.get('href', '')
-        match = _post_url_regex.match(href)
-        if match:
+        if match := _post_url_regex.match(href):
             path = _filter_query_params(href, whitelist=query_params)
             return f'{_base_url}{path}'
 
@@ -148,12 +144,10 @@ def _find_and_search(article, selector, pattern, cast=str):
 
 
 def _find_cursor(text):
-    match = _cursor_regex.search(text)
-    if match:
+    if match := _cursor_regex.search(text):
         return match.groups()[0]
 
-    match = _cursor_regex_2.search(text)
-    if match:
+    if match := _cursor_regex_2.search(text):
         value = match.groups()[0]
         return value.encode('utf-8').decode('unicode_escape').replace('\\/', '/')
 
